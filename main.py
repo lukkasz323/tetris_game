@@ -1,5 +1,7 @@
+import pygame
+
 def main():
-   pass 
+   pygame.init()
 
 if __name__ == '__main__':
     main()
