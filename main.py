@@ -1,17 +1,17 @@
 import pygame
 
 class Tetromino:
-    def __init__(self, GRID):
-        self.shape = [pygame.Rect(0 * GRID, 0 * GRID, GRID, GRID),
-                      pygame.Rect(1 * GRID, 0 * GRID, GRID, GRID),
-                      pygame.Rect(0 * GRID, 1 * GRID, GRID, GRID),
-                      pygame.Rect(1 * GRID, 1 * GRID, GRID, GRID)]
+    def __init__(self, G):
+        self.shape = [pygame.Rect(0 * G, 0 * G, G, G),
+                      pygame.Rect(1 * G, 0 * G, G, G),
+                      pygame.Rect(0 * G, 1 * G, G, G),
+                      pygame.Rect(1 * G, 1 * G, G, G)]
         self.color = 'red'
 
 def main():
     FRAMERATE = 60
     WIDTH, HEIGHT = 320, 512
-    GRID = 32
+    G = 32 # Grid size
     
     pygame.init()
     
@@ -26,7 +26,8 @@ def main():
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
-    t = Tetromino(GRID)
+    BORDER = pygame.Rect(0, 0, WIDTH, HEIGHT)
+    t = Tetromino(G)
     
     run = True
     while run:
@@ -44,19 +45,20 @@ def main():
         # Logic
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'yellow')
+        
         if event_timer:
             for rect in t.shape:
-                rect.move_ip(0, 32)
+                rect.move_ip(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
         
-        for rect in t.shape: 
+        for rect in t.shape: # Tetromino
             W.fill(t.color, rect)
         
-        for x in range(0, WIDTH, GRID): # Grid
-            for y in range(0, HEIGHT, GRID):
-                rect = pygame.Rect(x, y, GRID, GRID)
+        for x in range(0, WIDTH, G): # Grid
+            for y in range(0, HEIGHT, G):
+                rect = pygame.Rect(x, y, G, G)
                 pygame.draw.rect(W, 'gray10', rect, 1)
                 
         W.blit(text_fps, (WIDTH - 26, 0))
