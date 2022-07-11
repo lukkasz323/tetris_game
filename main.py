@@ -1,8 +1,12 @@
 import pygame
 
 class Tetromino:
-    def __init__(self):
-        pass
+    def __init__(self, GRID):
+        self.shape = [pygame.Rect(0 * GRID, 0 * GRID, GRID, GRID),
+                      pygame.Rect(1 * GRID, 0 * GRID, GRID, GRID),
+                      pygame.Rect(0 * GRID, 1 * GRID, GRID, GRID),
+                      pygame.Rect(1 * GRID, 1 * GRID, GRID, GRID)]
+        self.color = 'red'
 
 def main():
     FRAMERATE = 60
@@ -11,12 +15,18 @@ def main():
     
     pygame.init()
     
-    clock = pygame.time.Clock()
-    
-    font = pygame.font.SysFont('notomono', 20)
-    
+    # Display
     W = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('Tetris')
+    
+    # Timers
+    TIMER_1000 = pygame.event.custom_type()
+    pygame.time.set_timer(TIMER_1000, 1000)
+    
+    # Other
+    font = pygame.font.SysFont('notomono', 20)
+    clock = pygame.time.Clock()
+    t = Tetromino(GRID)
     
     run = True
     while run:
@@ -28,6 +38,8 @@ def main():
             match event.type:
                 case pygame.QUIT:
                     run = False
+                case TIMER_1000:
+                    print(event) 
               
         # Logic
         fps = round(clock.get_fps())
@@ -35,6 +47,9 @@ def main():
         
         # Draw
         W.fill((16, 16, 16)) # Background
+        
+        for rect in t.shape: 
+            W.fill(t.color, rect)
         
         for x in range(0, WIDTH, GRID): # Grid
             for y in range(0, HEIGHT, GRID):
