@@ -20,8 +20,8 @@ def main():
     pygame.display.set_caption('Tetris')
     
     # Timers
-    TIMER_1000 = pygame.event.custom_type()
-    pygame.time.set_timer(TIMER_1000, 1000)
+    TIMER = pygame.event.custom_type()
+    pygame.time.set_timer(TIMER, 100)
     
     # Other
     font = pygame.font.SysFont('notomono', 20)
@@ -34,16 +34,19 @@ def main():
         clock.tick(FRAMERATE)
         
         # Handle events
+        event_timer = False
         for event in pygame.event.get():
-            match event.type:
-                case pygame.QUIT:
-                    run = False
-                case TIMER_1000:
-                    print(event) 
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == TIMER:
+                event_timer = True
               
         # Logic
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'yellow')
+        if event_timer:
+            for rect in t.shape:
+                rect.move_ip(0, 32)
         
         # Draw
         W.fill((16, 16, 16)) # Background
