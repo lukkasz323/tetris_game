@@ -21,7 +21,7 @@ class Tetromino:
         rng = random.randint(0, 4)
         self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[rng]]
         self.color = colors[rng]
-        pygame.Rect(0, 0, G, G)
+        
     def is_move_down_allowed(self, border_bottom):
         result = None
         for rect in self.shape:
