@@ -4,9 +4,16 @@ class Tetromino:
     def __init__(self, G):
         self.shape = [pygame.Rect(0 * G, 0 * G, G, G),
                       pygame.Rect(1 * G, 0 * G, G, G),
-                      pygame.Rect(0 * G, 1 * G, G, G),
-                      pygame.Rect(1 * G, 1 * G, G, G)]
+                      pygame.Rect(1 * G, 1 * G, G, G),
+                      pygame.Rect(2 * G, 1 * G, G, G)]
         self.color = 'red'
+        
+    def is_move_down_allowed(self, border_bottom):
+        result = None
+        for rect in self.shape:
+            if rect.bottom >= border_bottom:
+                return False
+        return True
 
 def main():
     FRAMERATE = 60
@@ -22,11 +29,11 @@ def main():
     # Timers
     TIMER = pygame.event.custom_type()
     pygame.time.set_timer(TIMER, 100)
-    
+
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
-    BORDER = pygame.Rect(0, 0, WIDTH, HEIGHT)
+
     t = Tetromino(G)
     
     run = True
@@ -47,12 +54,14 @@ def main():
         text_fps = font.render(f'{fps}', True, 'yellow')
         
         if event_timer:
-            for rect in t.shape:
-                rect.move_ip(0, G)
+            print(t.is_move_down_allowed(HEIGHT))
+            if t.is_move_down_allowed(HEIGHT):
+                for rect in t.shape:
+                    rect.move_ip(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
-        
+
         for rect in t.shape: # Tetromino
             W.fill(t.color, rect)
         
