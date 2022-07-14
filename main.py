@@ -1,13 +1,27 @@
 import pygame
+import random
 
 class Tetromino:
     def __init__(self, G):
-        self.shape = [pygame.Rect(0 * G, 0 * G, G, G),
-                      pygame.Rect(1 * G, 0 * G, G, G),
-                      pygame.Rect(1 * G, 1 * G, G, G),
-                      pygame.Rect(2 * G, 1 * G, G, G)]
-        self.color = 'red'
+        self.shape = ()
+        self.color = 'white'
         
+    def move(self, x, y):
+        for rect in self.shape:
+            rect.move_ip(x, y)
+    
+    def set_random_shape(self, G):
+        shapes = (((0, 0), (1, 0), (2, 0), (3, 0)),
+                  ((0, 0), (1, 0), (0, 1), (1, 1)),
+                  ((0, 0), (1, 0), (2, 0), (1, 1)),
+                  ((0, 0), (1, 0), (2, 0), (2, 1)),
+                  ((0, 0), (1, 0), (1, 1), (2, 1)))
+        colors = ('cyan', 'yellow', 'magenta', 'orange', 'green')
+        
+        rng = random.randint(0, 4)
+        self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[rng]]
+        self.color = colors[rng]
+        pygame.Rect(0, 0, G, G)
     def is_move_down_allowed(self, border_bottom):
         result = None
         for rect in self.shape:
@@ -28,13 +42,14 @@ def main():
     
     # Timers
     TIMER = pygame.event.custom_type()
-    pygame.time.set_timer(TIMER, 100)
+    pygame.time.set_timer(TIMER, 500)
 
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
 
     t = Tetromino(G)
+    t.set_random_shape(G)
     
     run = True
     while run:
@@ -55,8 +70,7 @@ def main():
         
         if event_timer:
             if t.is_move_down_allowed(HEIGHT):
-                for rect in t.shape:
-                    rect.move_ip(0, G)
+                t.move(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
