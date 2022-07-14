@@ -54,7 +54,6 @@ def main():
         text_fps = font.render(f'{fps}', True, 'yellow')
         
         if event_timer:
-            print(t.is_move_down_allowed(HEIGHT))
             if t.is_move_down_allowed(HEIGHT):
                 for rect in t.shape:
                     rect.move_ip(0, G)
