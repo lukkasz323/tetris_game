@@ -3,8 +3,9 @@ import random
 
 class Tetromino:
     def __init__(self, G):
-        self.shape = ()
+        self.shape = []
         self.color = 'white'
+        self.set_random_shape(G)
         
     def move(self, x, y):
         for rect in self.shape:
@@ -29,6 +30,11 @@ class Tetromino:
                 return False
         return True
 
+def spawn_tetro(tetro_list, G):
+    tetro = Tetromino(G)
+    tetro_list.append(tetro)
+    return tetro
+
 def main():
     FRAMERATE = 60
     WIDTH, HEIGHT = 320, 512
@@ -42,14 +48,14 @@ def main():
     
     # Timers
     TIMER = pygame.event.custom_type()
-    pygame.time.set_timer(TIMER, 500)
+    pygame.time.set_timer(TIMER, 100)
 
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
 
-    t = Tetromino(G)
-    t.set_random_shape(G)
+    tetro_list = []
+    current_tetro = spawn_tetro(tetro_list, G)
     
     run = True
     while run:
@@ -63,20 +69,34 @@ def main():
                 run = False
             if event.type == TIMER:
                 event_timer = True
+            if event.type == pygame.KEYDOWN:
+                # Debug
+                if event.key == pygame.K_SPACE:
+                    current_tetro = spawn_tetro(tetro_list, G)
+                if event.key == pygame.K_q:
+                    pygame.time.set_timer(TIMER, 0)
+                if event.key == pygame.K_w:
+                    pygame.time.set_timer(TIMER, 1000)
+                if event.key == pygame.K_e:
+                    pygame.time.set_timer(TIMER, 100)
+                if event.key == pygame.K_r:
+                    pygame.time.set_timer(TIMER, 1)
               
         # Logic
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'yellow')
-        
+
         if event_timer:
-            if t.is_move_down_allowed(HEIGHT):
-                t.move(0, G)
+            for tetro in tetro_list:
+                if tetro.is_move_down_allowed(HEIGHT):
+                    tetro.move(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
 
-        for rect in t.shape: # Tetromino
-            W.fill(t.color, rect)
+        for tetro in tetro_list:
+            for rect in tetro.shape: # Tetromino
+                W.fill(tetro.color, rect)
         
         for x in range(0, WIDTH, G): # Grid
             for y in range(0, HEIGHT, G):
