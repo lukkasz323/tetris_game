@@ -76,26 +76,25 @@ def main():
                 if event.key == pygame.K_q:
                     pygame.time.set_timer(TIMER, 0)
                 if event.key == pygame.K_w:
-                    pygame.time.set_timer(TIMER, 1000)
+                    pygame.time.set_timer(TIMER, 500)
                 if event.key == pygame.K_e:
                     pygame.time.set_timer(TIMER, 100)
                 if event.key == pygame.K_r:
                     pygame.time.set_timer(TIMER, 1)
-              
+                    
         # Logic
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'yellow')
 
         if event_timer:
-            for tetro in tetro_list:
-                if tetro.is_move_down_allowed(HEIGHT):
-                    tetro.move(0, G)
+                if current_tetro.is_move_down_allowed(HEIGHT):
+                    current_tetro.move(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
 
-        for tetro in tetro_list:
-            for rect in tetro.shape: # Tetromino
+        for tetro in tetro_list: # Tetrominoes
+            for rect in tetro.shape: 
                 W.fill(tetro.color, rect)
         
         for x in range(0, WIDTH, G): # Grid
