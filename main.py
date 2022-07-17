@@ -43,8 +43,36 @@ class Tetromino:
             if rect.bottom >= HEIGHT:
                 return False
         return True
+    
+    def is_move_left_allowed(self, G, WIDTH, old_tetro_list):
+        # Check for tetrominoes left
+        shadow_shape = self.clone_and_move(-G, 0)
+        for shadow_rect in shadow_shape:
+            for tetro in old_tetro_list:
+                for foreign_rect in tetro.shape:
+                    if shadow_rect.colliderect(foreign_rect):
+                        return False    
+        # Check for border left
+        for rect in self.shape:
+            if rect.left <= 0:
+                return False
+        return True
+    
+    def is_move_right_allowed(self, G, WIDTH, old_tetro_list):
+        # Check for tetrominoes right
+        shadow_shape = self.clone_and_move(G, 0)
+        for shadow_rect in shadow_shape:
+            for tetro in old_tetro_list:
+                for foreign_rect in tetro.shape:
+                    if shadow_rect.colliderect(foreign_rect):
+                        return False    
+        # Check for border right
+        for rect in self.shape:
+            if rect.right >= WIDTH:
+                return False
+        return True
 
-def spawn_tetro(current_tetro, old_tetro_list, G):
+def respawn_tetro(current_tetro, old_tetro_list, G):
     if current_tetro:
         old_tetro_list.append(current_tetro)
     return Tetromino(G)
@@ -69,7 +97,7 @@ def main():
     clock = pygame.time.Clock()
     old_tetro_list = []
     
-    current_tetro = spawn_tetro(None, old_tetro_list, G)
+    current_tetro = respawn_tetro(None, old_tetro_list, G)
     
     run = True
     while run:
@@ -84,9 +112,15 @@ def main():
             if event.type == TIMER:
                 event_timer = True
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if current_tetro.is_move_left_allowed(G, WIDTH, old_tetro_list):
+                        current_tetro.move(-G, 0)
+                if event.key == pygame.K_RIGHT:
+                    if current_tetro.is_move_right_allowed(G, WIDTH, old_tetro_list):
+                        current_tetro.move(G, 0)
                 # Debug
                 if event.key == pygame.K_SPACE:
-                    current_tetro = spawn_tetro(current_tetro, old_tetro_list, G)
+                    current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
                 if event.key == pygame.K_q:
                     pygame.time.set_timer(TIMER, 0)
                 if event.key == pygame.K_w:
@@ -101,9 +135,10 @@ def main():
         text_fps = font.render(f'{fps}', True, 'yellow')
 
         if event_timer:
-            print(current_tetro.shape[0].bottom)
             if current_tetro.is_move_down_allowed(G, HEIGHT, old_tetro_list):
                 current_tetro.move(0, G)
+            else:
+                current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
