@@ -10,7 +10,14 @@ class Tetromino:
     def move(self, x, y):
         for rect in self.shape:
             rect.move_ip(x, y)
-    
+            
+    def clone_and_move(self, x, y):
+        clone = []
+        for rect in self.shape:
+            clone_rect = rect.move(x, y)
+            clone.append(clone_rect)
+        return clone
+            
     def set_random_shape(self, G):
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)),
                   ((0, 0), (1, 0), (0, 1), (1, 1)),
@@ -23,17 +30,24 @@ class Tetromino:
         self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[rng]]
         self.color = colors[rng]
         
-    def is_move_down_allowed(self, border_bottom):
-        result = None
+    def is_move_down_allowed(self, G, HEIGHT, old_tetro_list):
+        # Check for tetrominoes below
+        shadow_shape = self.clone_and_move(0, G)
+        for shadow_rect in shadow_shape:
+            for tetro in old_tetro_list:
+                for foreign_rect in tetro.shape:
+                    if shadow_rect.colliderect(foreign_rect):
+                        return False    
+        # Check for border below
         for rect in self.shape:
-            if rect.bottom >= border_bottom:
+            if rect.bottom >= HEIGHT:
                 return False
         return True
 
-def spawn_tetro(tetro_list, G):
-    tetro = Tetromino(G)
-    tetro_list.append(tetro)
-    return tetro
+def spawn_tetro(current_tetro, old_tetro_list, G):
+    if current_tetro:
+        old_tetro_list.append(current_tetro)
+    return Tetromino(G)
 
 def main():
     FRAMERATE = 60
@@ -53,9 +67,9 @@ def main():
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
-
-    tetro_list = []
-    current_tetro = spawn_tetro(tetro_list, G)
+    old_tetro_list = []
+    
+    current_tetro = spawn_tetro(None, old_tetro_list, G)
     
     run = True
     while run:
@@ -72,7 +86,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 # Debug
                 if event.key == pygame.K_SPACE:
-                    current_tetro = spawn_tetro(tetro_list, G)
+                    current_tetro = spawn_tetro(current_tetro, old_tetro_list, G)
                 if event.key == pygame.K_q:
                     pygame.time.set_timer(TIMER, 0)
                 if event.key == pygame.K_w:
@@ -87,15 +101,19 @@ def main():
         text_fps = font.render(f'{fps}', True, 'yellow')
 
         if event_timer:
-                if current_tetro.is_move_down_allowed(HEIGHT):
-                    current_tetro.move(0, G)
+            print(current_tetro.shape[0].bottom)
+            if current_tetro.is_move_down_allowed(G, HEIGHT, old_tetro_list):
+                current_tetro.move(0, G)
         
         # Draw
         W.fill((16, 16, 16)) # Background
 
-        for tetro in tetro_list: # Tetrominoes
-            for rect in tetro.shape: 
+        for tetro in old_tetro_list: # Old tetrominoes
+            for rect in tetro.shape:
                 W.fill(tetro.color, rect)
+                
+        for rect in current_tetro.shape: # Current tetromino
+            W.fill(current_tetro.color, rect)
         
         for x in range(0, WIDTH, G): # Grid
             for y in range(0, HEIGHT, G):
