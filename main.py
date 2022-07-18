@@ -6,6 +6,7 @@ class Tetromino:
         self.shape = []
         self.color = 'white'
         self.set_random_shape(G)
+        self.move(3 * G, -G)
         
     def move(self, x, y):
         for rect in self.shape:
