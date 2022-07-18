@@ -145,7 +145,7 @@ def main():
                 rect = pygame.Rect(x, y, G, G)
                 pygame.draw.rect(W, 'gray10', rect, 1)
                 
-        W.blit(text_fps, (WIDTH - 26, 0))
+        W.blit(text_fps, (WIDTH - 26, 0)) # FPS counter
         
         # Update screen
         pygame.display.update()
