@@ -96,8 +96,10 @@ def main():
         
         # Handle events
         event_timer = False
+        event_keyup = False
         key_left = False
         key_right = False
+        key_down = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -108,6 +110,8 @@ def main():
                     key_left = True
                 if event.key == pygame.K_RIGHT:
                     key_right = True
+                if event.key == pygame.K_DOWN:
+                    key_down = True
                 # Debug
                 if event.key == pygame.K_SPACE:
                     current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
@@ -119,7 +123,9 @@ def main():
                     pygame.time.set_timer(TIMER, 100)
                 if event.key == pygame.K_r:
                     pygame.time.set_timer(TIMER, 1)
-                    
+            if event.type == pygame.KEYUP:
+                event_keyup = True
+                
         # Logic
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'yellow')
@@ -130,13 +136,18 @@ def main():
             else:
                 current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
                 
-        if key_left and not event_timer:
-            if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
-                current_tetro.move(-G, 0)
-            
-        if key_right and not event_timer:
-            if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
-                current_tetro.move(G, 0)
+        if not event_timer:
+            if key_left:
+                if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
+                    current_tetro.move(-G, 0)
+            if key_right:
+                if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
+                    current_tetro.move(G, 0)
+
+        if key_down:
+            pygame.time.set_timer(TIMER, 100)
+        if event_keyup:
+            pygame.time.set_timer(TIMER, 1000)
                 
         # Draw
         W.fill((16, 16, 16)) # Background
