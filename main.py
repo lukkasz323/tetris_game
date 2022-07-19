@@ -6,7 +6,7 @@ class Tetromino:
         self.shape = []
         self.color = 'white'
         self.set_random_shape(G)
-        self.move(3 * G, -G)
+        self.move(3 * G, 0)
         
     def move(self, x, y):
         for rect in self.shape:
@@ -36,8 +36,8 @@ class Tetromino:
         shadow_shape = None
         match direction:
             case 'down': shadow_shape = self.clone_and_move(0, G)
-            case 'right': shadow_shape = self.clone_and_move(G, G)
-            case 'left': shadow_shape = self.clone_and_move(-G, G)
+            case 'left': shadow_shape = self.clone_and_move(-G, 0)
+            case 'right': shadow_shape = self.clone_and_move(G, 0)
         if not shadow_shape:
             raise NotImplementedError()
         for shadow_rect in shadow_shape:
@@ -51,13 +51,13 @@ class Tetromino:
                     for rect in self.shape:
                         if rect.bottom >= HEIGHT:
                             return False
-                case 'right':
-                    for rect in self.shape:
-                        if rect.right >= WIDTH:
-                            return False
                 case 'left':
                     for rect in self.shape:
                         if rect.left <= 0:
+                            return False
+                case 'right':
+                    for rect in self.shape:
+                        if rect.right >= WIDTH:
                             return False
             
         return True
@@ -80,7 +80,7 @@ def main():
     
     # Timers
     TIMER = pygame.event.custom_type()
-    pygame.time.set_timer(TIMER, 100)
+    pygame.time.set_timer(TIMER, 1000)
 
     # Other
     font = pygame.font.SysFont('notomono', 20)
@@ -96,6 +96,8 @@ def main():
         
         # Handle events
         event_timer = False
+        key_left = False
+        key_right = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -103,11 +105,9 @@ def main():
                 event_timer = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
-                        current_tetro.move(-G, 0)
+                    key_left = True
                 if event.key == pygame.K_RIGHT:
-                    if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
-                        current_tetro.move(G, 0)
+                    key_right = True
                 # Debug
                 if event.key == pygame.K_SPACE:
                     current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
@@ -129,7 +129,15 @@ def main():
                 current_tetro.move(0, G)
             else:
                 current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
-        
+                
+        if key_left and not event_timer:
+            if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
+                current_tetro.move(-G, 0)
+            
+        if key_right and not event_timer:
+            if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
+                current_tetro.move(G, 0)
+                
         # Draw
         W.fill((16, 16, 16)) # Background
 
