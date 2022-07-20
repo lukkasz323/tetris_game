@@ -32,7 +32,7 @@ class Tetromino:
         self.color = colors[rng]
         
     def is_move_allowed(self, direction, G, WIDTH, HEIGHT, old_tetro_list):
-        # Check for tetrominoes
+        # Check for tetrominoes collision
         shadow_shape = None
         match direction:
             case 'down': shadow_shape = self.clone_and_move(0, G)
@@ -44,7 +44,7 @@ class Tetromino:
                 for foreign_rect in tetro.shape:
                     if shadow_rect.colliderect(foreign_rect):
                         return False    
-        # Check for border
+        # Check for border collision
             match direction:
                 case 'down':
                     for rect in self.shape:
@@ -58,8 +58,8 @@ class Tetromino:
                     for rect in self.shape:
                         if rect.right >= WIDTH:
                             return False
-            
-        return True
+        # Allow move if there's no collision
+        return True 
 
 def respawn_tetro(current_tetro, old_tetro_list, G):
     if current_tetro:
