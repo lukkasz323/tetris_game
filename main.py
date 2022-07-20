@@ -112,17 +112,6 @@ def main():
                     key_right = True
                 if event.key == pygame.K_DOWN:
                     key_down = True
-                # Debug
-                if event.key == pygame.K_SPACE:
-                    current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
-                if event.key == pygame.K_q:
-                    pygame.time.set_timer(TIMER, 0)
-                if event.key == pygame.K_w:
-                    pygame.time.set_timer(TIMER, 500)
-                if event.key == pygame.K_e:
-                    pygame.time.set_timer(TIMER, 100)
-                if event.key == pygame.K_r:
-                    pygame.time.set_timer(TIMER, 1)
             if event.type == pygame.KEYUP:
                 event_keyup = True
                 
@@ -173,3 +162,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+# Bug: Move down not working when spamming move left/right.
