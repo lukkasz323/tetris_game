@@ -21,7 +21,7 @@ class Tetromino:
             
     def set_random_shape(self, G):
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)),
-                  ((0, 0), (1, 0), (0, 1), (1, 1)),
+                  ((1, 0), (2, 0), (1, 1), (2, 1)),
                   ((0, 0), (1, 0), (2, 0), (1, 1)),
                   ((0, 0), (1, 0), (2, 0), (2, 1)),
                   ((0, 0), (1, 0), (1, 1), (2, 1)))
@@ -128,7 +128,7 @@ def main():
                 
         # Logic
         fps = round(clock.get_fps())
-        text_fps = font.render(f'{fps}', True, 'yellow')
+        text_fps = font.render(f'{fps}', True, 'white')
 
         if event_timer:
             if current_tetro.is_move_allowed('down', G, WIDTH, HEIGHT, old_tetro_list):
@@ -145,7 +145,7 @@ def main():
                     current_tetro.move(G, 0)
 
         if key_down:
-            pygame.time.set_timer(TIMER, 100)
+            pygame.time.set_timer(TIMER, 50)
         if event_keyup:
             pygame.time.set_timer(TIMER, 1000)
                 
