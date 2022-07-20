@@ -38,8 +38,7 @@ class Tetromino:
             case 'down': shadow_shape = self.clone_and_move(0, G)
             case 'left': shadow_shape = self.clone_and_move(-G, 0)
             case 'right': shadow_shape = self.clone_and_move(G, 0)
-        if not shadow_shape:
-            raise NotImplementedError()
+            case _: raise NotImplementedError()
         for shadow_rect in shadow_shape:
             for tetro in old_tetro_list:
                 for foreign_rect in tetro.shape:
