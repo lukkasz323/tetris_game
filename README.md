@@ -1,4 +1,17 @@
 # tetris_game
-A Tetris game in Python.
+A Tetris game in Python. 
 
-Run "main.py" to start.
+# Requirements
+- Python 3.10
+- requirements.txt
+Use:
+```
+pip install -r requirements.txt
+```
+
+# Instructions
+To start use:
+```
+py main.py
+```
+or **START.bat** on Windows.
