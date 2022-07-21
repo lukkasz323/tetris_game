@@ -1,5 +1,5 @@
 # tetris_game
-A Tetris game in Python. 
+A Tetris game in Python with pygame.
 
 # Requirements
 - Python 3.10
