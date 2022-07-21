@@ -4,7 +4,6 @@ A Tetris game in Python.
 # Requirements
 - Python 3.10
 - requirements.txt
-Use:
 ```
 pip install -r requirements.txt
 ```
