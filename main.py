@@ -3,6 +3,7 @@ import random
 
 class Tetromino:
     def __init__(self, G):
+        self.type = None
         self.shape = []
         self.color = 'white'
         self.set_random_shape(G)
@@ -20,14 +21,18 @@ class Tetromino:
         return clone
             
     def set_random_shape(self, G):
-        shapes = (((0, 0), (1, 0), (2, 0), (3, 0)),
-                  ((1, 0), (2, 0), (1, 1), (2, 1)),
-                  ((0, 0), (1, 0), (2, 0), (1, 1)),
-                  ((0, 0), (1, 0), (2, 0), (2, 1)),
-                  ((0, 0), (1, 0), (1, 1), (2, 1)))
-        colors = ('cyan', 'yellow', 'magenta', 'orange', 'green')
+        types = ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
+        shapes = (((0, 0), (1, 0), (2, 0), (3, 0)), # I
+                  ((1, 0), (2, 0), (1, 1), (2, 1)), # O
+                  ((0, 0), (1, 0), (2, 0), (1, 1)), # T
+                  ((0, 0), (1, 0), (2, 0), (2, 1)), # J
+                  ((0, 1), (1, 1), (2, 1), (2, 0)), # L
+                  ((0, 1), (1, 1), (1, 0), (2, 0)), # S
+                  ((0, 0), (1, 0), (1, 1), (2, 1))) # Z
+        colors = ('cyan', 'yellow', 'magenta', 'blue', 'orange', 'green', 'red')
         
-        rng = random.randint(0, 4)
+        rng = random.randint(0, 6)
+        self.type = types[rng]
         self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[rng]]
         self.color = colors[rng]
         
@@ -162,4 +167,5 @@ def main():
 if __name__ == '__main__':
     main()
     
+# TODO: Improve rng
 # Bug: Move down not working when spamming move left/right.
