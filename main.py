@@ -1,18 +1,21 @@
 import pygame
 import random
 
+
 class Tetromino:
-    def __init__(self, G):
+    def __init__(self, G, bag):
         self.type = None
         self.shape = []
         self.color = 'white'
-        self.set_random_shape(G)
+        self.set_next_shape(G, bag)
         self.move(3 * G, 0)
+        
         
     def move(self, x, y):
         for rect in self.shape:
             rect.move_ip(x, y)
-            
+             
+             
     def clone_and_move(self, x, y):
         clone = []
         for rect in self.shape:
@@ -20,7 +23,8 @@ class Tetromino:
             clone.append(clone_rect)
         return clone
             
-    def set_random_shape(self, G):
+            
+    def set_next_shape(self, G, bag):
         types = ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)), # I
                   ((1, 0), (2, 0), (1, 1), (2, 1)), # O
@@ -31,10 +35,16 @@ class Tetromino:
                   ((0, 0), (1, 0), (1, 1), (2, 1))) # Z
         colors = ('cyan', 'yellow', 'magenta', 'blue', 'orange', 'green', 'red')
         
-        rng = random.randint(0, 6)
-        self.type = types[rng]
-        self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[rng]]
-        self.color = colors[rng]
+        if bag.index > 6:
+            bag.index = 0
+            random.shuffle(bag.bag)
+        next = bag.bag[bag.index]
+        bag.index += 1
+        
+        self.type = types[next]
+        self.shape = [pygame.Rect(rect[0] * G, rect[1] * G, G, G) for rect in shapes[next]]
+        self.color = colors[next]
+        
         
     def is_move_allowed(self, direction, G, WIDTH, HEIGHT, old_tetro_list):
         # Check for tetrominoes collision
@@ -65,11 +75,19 @@ class Tetromino:
                             return False
         # Allow move if there's no collision
         return True 
-
-def respawn_tetro(current_tetro, old_tetro_list, G):
+    
+        
+class Bag:
+    def __init__(self):
+        self.bag = [0, 1, 2, 3, 4, 5, 6]
+        self.index = 7
+        
+        
+def respawn_tetro(current_tetro, old_tetro_list, bag, G):
     if current_tetro:
         old_tetro_list.append(current_tetro)
-    return Tetromino(G)
+    return Tetromino(G, bag)
+
 
 def main():
     FRAMERATE = 60
@@ -89,9 +107,10 @@ def main():
     # Other
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
+    bag = Bag()
     old_tetro_list = []
     
-    current_tetro = respawn_tetro(None, old_tetro_list, G)
+    current_tetro = respawn_tetro(None, old_tetro_list, bag, G)
     
     run = True
     while run:
@@ -127,7 +146,7 @@ def main():
             if current_tetro.is_move_allowed('down', G, WIDTH, HEIGHT, old_tetro_list):
                 current_tetro.move(0, G)
             else:
-                current_tetro = respawn_tetro(current_tetro, old_tetro_list, G)
+                current_tetro = respawn_tetro(current_tetro, old_tetro_list, bag, G)
                 
         if not event_timer:
             if key_left:
@@ -164,8 +183,8 @@ def main():
                     
     pygame.quit()
 
+
 if __name__ == '__main__':
     main()
     
-# TODO: Improve rng
 # Bug: Move down not working when spamming move left/right.
