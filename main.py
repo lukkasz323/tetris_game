@@ -2,12 +2,17 @@ import pygame
 import random
 
 
+FRAMERATE = 60
+WIDTH, HEIGHT = 320, 512
+G = 32 # Grid size
+
+
 class Tetromino:
-    def __init__(self, G, bag):
+    def __init__(self, bag):
         self.type = None
         self.shape = []
         self.color = 'white'
-        self.set_next_shape(G, bag)
+        self.set_next_shape(bag)
         self.move(3 * G, 0)
         
         
@@ -24,7 +29,7 @@ class Tetromino:
         return clone
             
             
-    def set_next_shape(self, G, bag):
+    def set_next_shape(self, bag):
         types = ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)), # I
                   ((1, 0), (2, 0), (1, 1), (2, 1)), # O
@@ -46,7 +51,7 @@ class Tetromino:
         self.color = colors[next]
         
         
-    def is_move_allowed(self, direction, G, WIDTH, HEIGHT, old_tetro_list):
+    def is_move_allowed(self, direction, old_tetro_list):
         # Check for tetrominoes collision
         shadow_shape = None
         match direction:
@@ -83,17 +88,14 @@ class Bag:
         self.index = 7
         
         
-def respawn_tetro(current_tetro, old_tetro_list, bag, G):
+def respawn_tetro(current_tetro, old_tetro_list, bag):
     if current_tetro:
         old_tetro_list.append(current_tetro)
-    return Tetromino(G, bag)
+    return Tetromino(bag)
 
 
 def main():
-    FRAMERATE = 60
-    WIDTH, HEIGHT = 320, 512
-    G = 32 # Grid size
-    
+    #Init
     pygame.init()
     
     # Display
@@ -110,8 +112,9 @@ def main():
     bag = Bag()
     old_tetro_list = []
     
-    current_tetro = respawn_tetro(None, old_tetro_list, bag, G)
+    current_tetro = respawn_tetro(None, old_tetro_list, bag)
     
+    # Loop every frame
     run = True
     while run:
         # Limit framerate
@@ -145,17 +148,17 @@ def main():
         text_fps = font.render(f'{fps}', True, 'white')
 
         if event_timer:
-            if current_tetro.is_move_allowed('down', G, WIDTH, HEIGHT, old_tetro_list):
+            if current_tetro.is_move_allowed('down', old_tetro_list):
                 current_tetro.move(0, G)
             else:
-                current_tetro = respawn_tetro(current_tetro, old_tetro_list, bag, G)
+                current_tetro = respawn_tetro(current_tetro, old_tetro_list, bag)
                 
         if not event_timer:
             if key_a:
-                if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
+                if current_tetro.is_move_allowed('left', old_tetro_list):
                     current_tetro.move(-G, 0)
             if key_d:
-                if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
+                if current_tetro.is_move_allowed('right', old_tetro_list):
                     current_tetro.move(G, 0)
 
         if key_s:
