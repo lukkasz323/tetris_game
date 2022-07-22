@@ -120,22 +120,24 @@ def main():
         # Handle events
         event_timer = False
         event_keyup = False
-        key_left = False
-        key_right = False
-        key_down = False
+        key_a = False
+        key_d = False
+        key_s = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == TIMER:
+            elif event.type == TIMER:
                 event_timer = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    key_left = True
-                if event.key == pygame.K_RIGHT:
-                    key_right = True
-                if event.key == pygame.K_DOWN:
-                    key_down = True
-            if event.type == pygame.KEYUP:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    key_a = True
+                elif event.key == pygame.K_d:
+                    key_d = True
+                elif event.key == pygame.K_s:
+                    key_s = True
+                elif event.key == pygame.K_w:
+                    key_w = True
+            elif event.type == pygame.KEYUP:
                 event_keyup = True
                 
         # Logic
@@ -149,14 +151,14 @@ def main():
                 current_tetro = respawn_tetro(current_tetro, old_tetro_list, bag, G)
                 
         if not event_timer:
-            if key_left:
+            if key_a:
                 if current_tetro.is_move_allowed('left', G, WIDTH, HEIGHT, old_tetro_list):
                     current_tetro.move(-G, 0)
-            if key_right:
+            if key_d:
                 if current_tetro.is_move_allowed('right', G, WIDTH, HEIGHT, old_tetro_list):
                     current_tetro.move(G, 0)
 
-        if key_down:
+        if key_s:
             pygame.time.set_timer(TIMER, 50)
         if event_keyup:
             pygame.time.set_timer(TIMER, 1000)
