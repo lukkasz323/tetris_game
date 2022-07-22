@@ -191,5 +191,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
-# Bug: Move down not working when spamming move left/right.
