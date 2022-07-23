@@ -1,1 +1,8 @@
-# Bug: Move down not working when spamming move left/right.
+Main:
+- Rotation
+
+Optional:
+- Wall kick on rotation
+
+Bugs: 
+- Move down not working when spamming move left/right.
