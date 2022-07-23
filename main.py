@@ -9,9 +9,11 @@ G = 32 # Grid size
 
 class Tetromino:
     def __init__(self, bag):
-        self.type = None
-        self.shape = []
-        self.color = 'white'
+        self.type: str
+        self.color: str
+        self.shape: list
+        self.rotation = 0
+        
         self.set_next_shape(bag)
         self.move(3 * G, 0)
         
@@ -33,8 +35,8 @@ class Tetromino:
         types = ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)), # I
                   ((1, 0), (2, 0), (1, 1), (2, 1)), # O
-                  ((0, 0), (1, 0), (2, 0), (1, 1)), # T
-                  ((0, 0), (1, 0), (2, 0), (2, 1)), # J
+                  ((0, 1), (1, 1), (2, 1), (1, 0)), # T
+                  ((0, 1), (1, 1), (2, 1), (0, 0)), # J
                   ((0, 1), (1, 1), (2, 1), (2, 0)), # L
                   ((0, 1), (1, 1), (1, 0), (2, 0)), # S
                   ((0, 0), (1, 0), (1, 1), (2, 1))) # Z
@@ -77,7 +79,7 @@ class Tetromino:
                 case 'right':
                     for rect in self.shape:
                         if rect.right >= WIDTH:
-                            return False
+                            return False 
         # Allow move if there's no collision
         return True 
     
