@@ -1,5 +1,6 @@
 import pygame
 import random
+from data import ROTATION
 
 
 FRAMERATE = 60
@@ -84,6 +85,18 @@ class Tetromino:
         return True 
     
         
+    def rotate(self): 
+        # ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
+        # ((0, 0), (1, 0), (2, 0), (3, 0)), # I
+        # rect.topleft += shift
+        for rect, shift in zip(self.shape, ROTATION[self.type][self.rotation]):
+            rect.topleft = rect.topleft[0] + shift[0] * G, rect.topleft[1] + shift[1] * G
+        if self.rotation >= 3:
+            self.rotation = 0
+        else:
+            self.rotation += 1
+                     
+        
 class Bag:
     def __init__(self):
         self.bag = [0, 1, 2, 3, 4, 5, 6]
@@ -125,23 +138,25 @@ def main():
         # Handle events
         event_timer = False
         event_keyup = False
+        key_w = False
+        key_s = False
         key_a = False
         key_d = False
-        key_s = False
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == TIMER:
                 event_timer = True
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_w:
+                    key_w = True
+                elif event.key == pygame.K_s:
+                    key_s = True
+                elif event.key == pygame.K_a:
                     key_a = True
                 elif event.key == pygame.K_d:
                     key_d = True
-                elif event.key == pygame.K_s:
-                    key_s = True
-                elif event.key == pygame.K_w:
-                    key_w = True
             elif event.type == pygame.KEYUP:
                 event_keyup = True
                 
@@ -162,6 +177,8 @@ def main():
             if key_d:
                 if current_tetro.is_move_allowed('right', old_tetro_list):
                     current_tetro.move(G, 0)
+            if key_w:
+                current_tetro.rotate()
 
         if key_s:
             pygame.time.set_timer(TIMER, 50)
