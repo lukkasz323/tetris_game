@@ -1,5 +1,8 @@
 Main:
-- Rotation
+- Score
+- Lose condition
+- Clear lines
+- Rotate collisions
 
 Optional:
 - Wall kick on rotation
