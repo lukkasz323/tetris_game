@@ -1,11 +1,9 @@
 Main:
 - Score
-- Lose condition
 - Clear lines
-- Rotate collisions
 
 Optional:
 - Wall kick on rotation
 
 Bugs: 
-- Move down not working when spamming move left/right.
+- Spamming 'down' key crashes the game (caused by accelerate timer)

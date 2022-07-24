@@ -153,6 +153,7 @@ def main():
     
     # Timers
     TIMER = pygame.event.custom_type()
+    ACCELERATE = pygame.event.custom_type()
     pygame.time.set_timer(TIMER, 1000)
 
     # Other
@@ -171,6 +172,7 @@ def main():
         
         # Handle events
         event_timer = False
+        event_accelerate = False
         event_keyup = False
         key_w = False
         key_s = False
@@ -181,6 +183,8 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == TIMER:
+                event_timer = True
+            elif event.type == ACCELERATE:
                 event_timer = True
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
@@ -198,13 +202,13 @@ def main():
         fps = round(clock.get_fps())
         text_fps = font.render(f'{fps}', True, 'white')
 
-        if event_timer:
+        if event_timer or event_accelerate:
             if current_tetro.is_move_allowed('down', abandoned):
                 current_tetro.move(0, G)
             else:
                 current_tetro = respawn_tetro(current_tetro, abandoned, bag)
                 
-        if not event_timer:
+        if (not event_timer) or (not event_accelerate):
             if key_a:
                 if current_tetro.is_move_allowed('left', abandoned):
                     current_tetro.move(-G, 0)
@@ -216,9 +220,9 @@ def main():
                     current_tetro.rotate()
 
         if key_s:
-            pygame.time.set_timer(TIMER, 50)
+            pygame.time.set_timer(ACCELERATE, 50)
         if event_keyup:
-            pygame.time.set_timer(TIMER, 1000)
+            pygame.time.set_timer(ACCELERATE, 0)
             
         # Check for game over, if true restart game
         if is_tetro_collision(current_tetro.shape, abandoned):
