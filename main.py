@@ -65,7 +65,7 @@ class Tetromino:
         self.color = colors[next]
         
         
-    def is_move_allowed(self, direction, old_tetro_list):
+    def is_move_allowed(self, direction, abandoned):
         # Check for tetrominoes collision
         shadow_shape = None
         
@@ -75,7 +75,7 @@ class Tetromino:
             case 'right': shadow_shape = self.clone_and_move(G, 0)
             case _: raise NotImplementedError()
             
-        if is_tetro_collision(shadow_shape, old_tetro_list):
+        if is_tetro_collision(shadow_shape, abandoned):
             return False
         
         # Check for border collision
@@ -97,7 +97,7 @@ class Tetromino:
         return True 
     
         
-    def is_rotate_allowed(self, old_tetro_list):
+    def is_rotate_allowed(self, abandoned):
         # Shadow shape for testing collision
         shadow_shape = []
         for rect in self.shape:
@@ -108,7 +108,7 @@ class Tetromino:
             shadow_rect.topleft = shadow_rect.topleft[0] + shift[0] * G, shadow_rect.topleft[1] + shift[1] * G
         
         # Check for collision with other tetrominoes
-        if is_tetro_collision(shadow_shape, old_tetro_list):
+        if is_tetro_collision(shadow_shape, abandoned):
             return False
         
         # Check for collision with the border
@@ -128,18 +128,18 @@ class Bag:
         self.index = 7
         
 
-def is_tetro_collision(shape, old_tetro_list):
+def is_tetro_collision(shape, abandoned):
     for rect in shape:
-        for foreign_tetro in old_tetro_list:
+        for foreign_tetro in abandoned:
             for foreign_rect in foreign_tetro.shape:
                 if rect.colliderect(foreign_rect):
                     return True
     return False
 
 
-def respawn_tetro(current_tetro, old_tetro_list, bag):
+def respawn_tetro(current_tetro, abandoned, bag):
     if current_tetro:
-        old_tetro_list.append(current_tetro)
+        abandoned.append(current_tetro)
     return Tetromino(bag)
 
 
@@ -159,9 +159,9 @@ def main():
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
     bag = Bag()
-    old_tetro_list = []
+    abandoned = []
     
-    current_tetro = respawn_tetro(None, old_tetro_list, bag)
+    current_tetro = respawn_tetro(None, abandoned, bag)
     
     # Loop every frame
     run = True
@@ -199,20 +199,20 @@ def main():
         text_fps = font.render(f'{fps}', True, 'white')
 
         if event_timer:
-            if current_tetro.is_move_allowed('down', old_tetro_list):
+            if current_tetro.is_move_allowed('down', abandoned):
                 current_tetro.move(0, G)
             else:
-                current_tetro = respawn_tetro(current_tetro, old_tetro_list, bag)
+                current_tetro = respawn_tetro(current_tetro, abandoned, bag)
                 
         if not event_timer:
             if key_a:
-                if current_tetro.is_move_allowed('left', old_tetro_list):
+                if current_tetro.is_move_allowed('left', abandoned):
                     current_tetro.move(-G, 0)
             if key_d:
-                if current_tetro.is_move_allowed('right', old_tetro_list):
+                if current_tetro.is_move_allowed('right', abandoned):
                     current_tetro.move(G, 0)
             if key_w:
-                if current_tetro.is_rotate_allowed(old_tetro_list):
+                if current_tetro.is_rotate_allowed(abandoned):
                     current_tetro.rotate()
 
         if key_s:
@@ -223,7 +223,7 @@ def main():
         # Draw
         W.fill((16, 16, 16)) # Background
 
-        for tetro in old_tetro_list: # Old tetrominoes
+        for tetro in abandoned: # Old tetrominoes
             for rect in tetro.shape:
                 W.fill(tetro.color, rect)
                 
