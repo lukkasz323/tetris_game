@@ -31,7 +31,18 @@ class Tetromino:
             clone.append(clone_rect)
         return clone
             
-            
+    
+    def rotate(self): 
+        # Shift rects
+        for rect, shift in zip(self.shape, ROTATION[self.type][self.rotation]):
+            rect.topleft = rect.topleft[0] + shift[0] * G, rect.topleft[1] + shift[1] * G
+        # Update rotation info
+        if self.rotation >= 3:
+            self.rotation = 0
+        else:
+            self.rotation += 1
+    
+    
     def set_next_shape(self, bag):
         types = ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
         shapes = (((0, 0), (1, 0), (2, 0), (3, 0)), # I
@@ -81,21 +92,35 @@ class Tetromino:
                 for rect in self.shape:
                     if rect.right >= WIDTH:
                         return False 
+                    
         # Allow move if there's no collision
         return True 
     
         
-    def rotate(self): 
-        # ('I', 'O', 'T', 'J', 'L', 'S', 'Z')
-        # ((0, 0), (1, 0), (2, 0), (3, 0)), # I
-        # rect.topleft += shift
-        for rect, shift in zip(self.shape, ROTATION[self.type][self.rotation]):
-            rect.topleft = rect.topleft[0] + shift[0] * G, rect.topleft[1] + shift[1] * G
-        if self.rotation >= 3:
-            self.rotation = 0
-        else:
-            self.rotation += 1
-                     
+    def is_rotate_allowed(self, old_tetro_list):
+        # Shadow shape for testing collision
+        shadow_shape = []
+        for rect in self.shape:
+            shadow_shape.append(rect.copy())
+        
+        # Rotate shadow shape
+        for shadow_rect, shift in zip(shadow_shape, ROTATION[self.type][self.rotation]):
+            shadow_rect.topleft = shadow_rect.topleft[0] + shift[0] * G, shadow_rect.topleft[1] + shift[1] * G
+        
+        # Check for collision with other tetrominoes
+        if is_tetro_collision(shadow_shape, old_tetro_list):
+            return False
+        
+        # Check for collision with the border
+        for shadow_rect in shadow_shape:
+            if shadow_rect.bottom > HEIGHT or\
+                shadow_rect.left < 0 or\
+                shadow_rect.right > WIDTH:
+                    return False
+        
+        # Allow rotate if there's no collision  
+        return True
+        
         
 class Bag:
     def __init__(self):
@@ -109,6 +134,7 @@ def is_tetro_collision(shape, old_tetro_list):
             for foreign_rect in foreign_tetro.shape:
                 if rect.colliderect(foreign_rect):
                     return True
+    return False
 
 
 def respawn_tetro(current_tetro, old_tetro_list, bag):
@@ -186,7 +212,8 @@ def main():
                 if current_tetro.is_move_allowed('right', old_tetro_list):
                     current_tetro.move(G, 0)
             if key_w:
-                current_tetro.rotate()
+                if current_tetro.is_rotate_allowed(old_tetro_list):
+                    current_tetro.rotate()
 
         if key_s:
             pygame.time.set_timer(TIMER, 50)
