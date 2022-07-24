@@ -219,6 +219,12 @@ def main():
             pygame.time.set_timer(TIMER, 50)
         if event_keyup:
             pygame.time.set_timer(TIMER, 1000)
+            
+        # Check for game over, if true restart game
+        if is_tetro_collision(current_tetro.shape, abandoned):
+            bag = Bag()
+            abandoned = []
+            current_tetro = respawn_tetro(None, abandoned, bag)
                 
         # Draw
         W.fill((16, 16, 16)) # Background
