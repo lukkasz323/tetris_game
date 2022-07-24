@@ -161,6 +161,7 @@ def main():
     clock = pygame.time.Clock()
     bag = Bag()
     abandoned = []
+    score = 0
     
     current_tetro = respawn_tetro(None, abandoned, bag)
     
@@ -200,6 +201,8 @@ def main():
                 
         # Logic
         fps = round(clock.get_fps())
+        text_score = font.render(f'Score: {score}', True, 'white')
+        
         print(f'FPS: {fps}') # Somehow prevents crash?
 
         if event_timer or event_accelerate:
@@ -208,7 +211,7 @@ def main():
             else:
                 current_tetro = respawn_tetro(current_tetro, abandoned, bag)
                 
-        if (not event_timer) or (not event_accelerate):
+        if (not event_timer) and (not event_accelerate):
             if key_a:
                 if current_tetro.is_move_allowed('left', abandoned):
                     current_tetro.move(-G, 0)
@@ -228,6 +231,7 @@ def main():
         if is_tetro_collision(current_tetro.shape, abandoned):
             bag = Bag()
             abandoned = []
+            score = 0
             current_tetro = respawn_tetro(None, abandoned, bag)
         
         # Draw
@@ -245,7 +249,7 @@ def main():
                 rect = pygame.Rect(x, y, G, G)
                 pygame.draw.rect(W, 'gray10', rect, 1)
                 
-        # W.blit(text_fps, (WIDTH - 26, 0)) # FPS counter
+        W.blit(text_score, (4, 0)) # FPS counter
         
         # Update screen
         pygame.display.update()
