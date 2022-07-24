@@ -57,30 +57,30 @@ class Tetromino:
     def is_move_allowed(self, direction, old_tetro_list):
         # Check for tetrominoes collision
         shadow_shape = None
+        
         match direction:
             case 'down': shadow_shape = self.clone_and_move(0, G)
             case 'left': shadow_shape = self.clone_and_move(-G, 0)
             case 'right': shadow_shape = self.clone_and_move(G, 0)
             case _: raise NotImplementedError()
-        for shadow_rect in shadow_shape:
-            for tetro in old_tetro_list:
-                for foreign_rect in tetro.shape:
-                    if shadow_rect.colliderect(foreign_rect):
-                        return False    
+            
+        if is_tetro_collision(shadow_shape, old_tetro_list):
+            return False
+        
         # Check for border collision
-            match direction:
-                case 'down':
-                    for rect in self.shape:
-                        if rect.bottom >= HEIGHT:
-                            return False
-                case 'left':
-                    for rect in self.shape:
-                        if rect.left <= 0:
-                            return False
-                case 'right':
-                    for rect in self.shape:
-                        if rect.right >= WIDTH:
-                            return False 
+        match direction:
+            case 'down':
+                for rect in self.shape:
+                    if rect.bottom >= HEIGHT:
+                        return False
+            case 'left':
+                for rect in self.shape:
+                    if rect.left <= 0:
+                        return False
+            case 'right':
+                for rect in self.shape:
+                    if rect.right >= WIDTH:
+                        return False 
         # Allow move if there's no collision
         return True 
     
@@ -102,7 +102,15 @@ class Bag:
         self.bag = [0, 1, 2, 3, 4, 5, 6]
         self.index = 7
         
-        
+
+def is_tetro_collision(shape, old_tetro_list):
+    for rect in shape:
+        for foreign_tetro in old_tetro_list:
+            for foreign_rect in foreign_tetro.shape:
+                if rect.colliderect(foreign_rect):
+                    return True
+
+
 def respawn_tetro(current_tetro, old_tetro_list, bag):
     if current_tetro:
         old_tetro_list.append(current_tetro)
@@ -110,7 +118,7 @@ def respawn_tetro(current_tetro, old_tetro_list, bag):
 
 
 def main():
-    #Init
+    # Init
     pygame.init()
     
     # Display
