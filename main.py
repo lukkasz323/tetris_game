@@ -200,7 +200,7 @@ def main():
                 
         # Logic
         fps = round(clock.get_fps())
-        text_fps = font.render(f'{fps}', True, 'white')
+        print(f'FPS: {fps}') # Somehow prevents crash?
 
         if event_timer or event_accelerate:
             if current_tetro.is_move_allowed('down', abandoned):
@@ -230,9 +230,6 @@ def main():
             abandoned = []
             current_tetro = respawn_tetro(None, abandoned, bag)
         
-        # Somehow prevents crash?
-        print(f'FPS: {fps}')
-        
         # Draw
         W.fill((16, 16, 16)) # Background
 
@@ -248,7 +245,7 @@ def main():
                 rect = pygame.Rect(x, y, G, G)
                 pygame.draw.rect(W, 'gray10', rect, 1)
                 
-        W.blit(text_fps, (WIDTH - 26, 0)) # FPS counter
+        # W.blit(text_fps, (WIDTH - 26, 0)) # FPS counter
         
         # Update screen
         pygame.display.update()
