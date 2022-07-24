@@ -156,7 +156,7 @@ def main():
     ACCELERATE = pygame.event.custom_type()
     pygame.time.set_timer(TIMER, 1000)
 
-    # Other
+    # Other 
     font = pygame.font.SysFont('notomono', 20)
     clock = pygame.time.Clock()
     bag = Bag()
@@ -229,7 +229,10 @@ def main():
             bag = Bag()
             abandoned = []
             current_tetro = respawn_tetro(None, abandoned, bag)
-                
+        
+        # Somehow prevents crash?
+        print(f'FPS: {fps}')
+        
         # Draw
         W.fill((16, 16, 16)) # Background
 
@@ -249,7 +252,7 @@ def main():
         
         # Update screen
         pygame.display.update()
-                    
+                     
     pygame.quit()
 
 

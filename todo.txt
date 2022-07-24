@@ -5,5 +5,3 @@ Main:
 Optional:
 - Wall kick on rotation
 
-Bugs: 
-- Spamming 'down' key crashes the game (caused by accelerate timer)
