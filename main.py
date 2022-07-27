@@ -6,6 +6,7 @@ from data import ROTATION
 FRAMERATE = 60
 WIDTH, HEIGHT = 320, 512
 G = 32 # Grid size
+LINE_LENGTH = WIDTH // G
 
 
 class Tetromino:
@@ -211,6 +212,38 @@ def main():
             else:
                 current_tetro = respawn_tetro(current_tetro, abandoned, bag)
                 
+                # Handle line clearing
+                rects = []
+                rects_values = []
+                clear = []
+                
+                for tetro in abandoned:
+                    for rect in tetro.shape:
+                        rects.append(rect)
+                        rects_values.append(rect.top)
+                for i, value in enumerate(rects_values):
+                    if rects_values.count(value) >= 10:
+                        clear.append(rects[i])
+                
+                if len(clear) >= 10:
+                    lines_to_clear = len(clear) // LINE_LENGTH
+                    for cleared_rect in clear:
+                        for tetro in abandoned:
+                            try:
+                                tetro.shape.remove(cleared_rect)
+                            except ValueError:
+                                pass
+                    for _ in range(lines_to_clear):
+                        for tetro in abandoned:
+                            tetro.move(0, G)
+                    
+                # Handle game over
+                if is_tetro_collision(current_tetro.shape, abandoned):
+                    bag = Bag()
+                    abandoned = []
+                    score = 0
+                    current_tetro = respawn_tetro(None, abandoned, bag)
+                
         if (not event_timer) and (not event_accelerate):
             if key_a:
                 if current_tetro.is_move_allowed('left', abandoned):
@@ -227,12 +260,7 @@ def main():
         if event_keyup:
             pygame.time.set_timer(ACCELERATE, 0)
             
-        # Check for game over, if true restart game
-        if is_tetro_collision(current_tetro.shape, abandoned):
-            bag = Bag()
-            abandoned = []
-            score = 0
-            current_tetro = respawn_tetro(None, abandoned, bag)
+        
         
         # Draw
         W.fill((16, 16, 16)) # Background
@@ -251,7 +279,7 @@ def main():
                 
         W.blit(text_score, (4, 0)) # FPS counter
         
-        # Update screen
+        # Update screens
         pygame.display.update()
                      
     pygame.quit()

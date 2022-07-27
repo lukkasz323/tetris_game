@@ -5,3 +5,7 @@ Main:
 Optional:
 - Wall kick on rotation
 - Levels
+
+Bugs:
+- Line clearing bugs when leaving bottom levels alone
+and clearing the rest
