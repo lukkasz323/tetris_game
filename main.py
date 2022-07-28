@@ -129,6 +129,26 @@ class Bag:
         self.index = 7
         
 
+def respawn_tetro(current_tetro, abandoned, bag):
+    if current_tetro:
+        abandoned.append(current_tetro)
+    return Tetromino(bag)
+
+
+def clear_lines(clear, abandoned):
+    for cleared_rect in clear:
+        for tetro in abandoned:
+            try:
+                tetro.shape.remove(cleared_rect)
+            except ValueError:
+                pass
+    
+    lines_amount = len(clear) // LINE_LENGTH
+    for _ in range(lines_amount):
+        for tetro in abandoned:
+            tetro.move(0, G)
+
+
 def is_tetro_collision(shape, abandoned):
     for rect in shape:
         for foreign_tetro in abandoned:
@@ -138,10 +158,21 @@ def is_tetro_collision(shape, abandoned):
     return False
 
 
-def respawn_tetro(current_tetro, abandoned, bag):
-    if current_tetro:
-        abandoned.append(current_tetro)
-    return Tetromino(bag)
+def get_rects_to_clear(abandoned):
+    clear = []
+    rects = []
+    rects_values = []
+    
+    for tetro in abandoned:
+        for rect in tetro.shape:
+            rects.append(rect)
+            rects_values.append(rect.top)
+            
+    for i, value in enumerate(rects_values):
+        if rects_values.count(value) >= 10:
+            clear.append(rects[i])
+    
+    return clear
 
 
 def main():
@@ -211,31 +242,9 @@ def main():
                 current_tetro.move(0, G)
             else:
                 current_tetro = respawn_tetro(current_tetro, abandoned, bag)
-                
-                # Handle line clearing
-                rects = []
-                rects_values = []
-                clear = []
-                
-                for tetro in abandoned:
-                    for rect in tetro.shape:
-                        rects.append(rect)
-                        rects_values.append(rect.top)
-                for i, value in enumerate(rects_values):
-                    if rects_values.count(value) >= 10:
-                        clear.append(rects[i])
-                
-                if len(clear) >= 10:
-                    lines_to_clear = len(clear) // LINE_LENGTH
-                    for cleared_rect in clear:
-                        for tetro in abandoned:
-                            try:
-                                tetro.shape.remove(cleared_rect)
-                            except ValueError:
-                                pass
-                    for _ in range(lines_to_clear):
-                        for tetro in abandoned:
-                            tetro.move(0, G)
+                clear = get_rects_to_clear(abandoned)
+                if len(clear) >= LINE_LENGTH:
+                    clear_lines(clear, abandoned)
                     
                 # Handle game over
                 if is_tetro_collision(current_tetro.shape, abandoned):
