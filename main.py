@@ -2,7 +2,6 @@ import pygame
 import random
 from data import ROTATION
 
-
 FRAMERATE = 60
 WIDTH, HEIGHT = 320, 512
 G = 32 # Grid size
@@ -71,9 +70,12 @@ class Tetromino:
         shadow_shape = None
         
         match direction:
-            case 'down': shadow_shape = self.clone_and_move(0, G)
-            case 'left': shadow_shape = self.clone_and_move(-G, 0)
-            case 'right': shadow_shape = self.clone_and_move(G, 0)
+            case 'down': 
+                shadow_shape = self.clone_and_move(0, G)
+            case 'left': 
+                shadow_shape = self.clone_and_move(-G, 0)
+            case 'right': 
+                shadow_shape = self.clone_and_move(G, 0)
             case _: raise NotImplementedError()
             
         if is_tetro_collision(shadow_shape, abandoned):
@@ -136,17 +138,47 @@ def respawn_tetro(current_tetro, abandoned, bag):
 
 
 def clear_lines(clear, abandoned):
+    # Remove cleared rects
     for cleared_rect in clear:
         for tetro in abandoned:
             try:
                 tetro.shape.remove(cleared_rect)
             except ValueError:
                 pass
+            
+    # Return added score
+    match len(clear) // LINE_LENGTH:
+        case 1:
+            return 1
+        case 2:
+            return 3
+        case 3:
+            return 6
+        case 4:
+            return 10
+        case _:
+            return 0
+
+
+def drop_rects(abandoned):
+    check_is_needed = True
     
-    lines_amount = len(clear) // LINE_LENGTH
-    for _ in range(lines_amount):
+    while check_is_needed:
+        check_is_needed = False
         for tetro in abandoned:
-            tetro.move(0, G)
+            for rect in tetro.shape:
+                shadow_rect = rect.move(0, G)
+                if not is_rect_collision(shadow_rect, abandoned) and rect.bottom < HEIGHT:
+                    rect.move_ip(0, G)
+                    check_is_needed = True
+
+
+def is_rect_collision(rect, abandoned):
+    for foreign_tetro in abandoned:
+        for foreign_rect in foreign_tetro.shape:
+            if rect.colliderect(foreign_rect):
+                return True
+    return False
 
 
 def is_tetro_collision(shape, abandoned):
@@ -242,9 +274,12 @@ def main():
                 current_tetro.move(0, G)
             else:
                 current_tetro = respawn_tetro(current_tetro, abandoned, bag)
+                
                 clear = get_rects_to_clear(abandoned)
                 if len(clear) >= LINE_LENGTH:
-                    clear_lines(clear, abandoned)
+                    added_score = clear_lines(clear, abandoned)
+                    score += added_score
+                    drop_rects(abandoned)
                     
                 # Handle game over
                 if is_tetro_collision(current_tetro.shape, abandoned):
@@ -268,8 +303,6 @@ def main():
             pygame.time.set_timer(ACCELERATE, 50)
         if event_keyup:
             pygame.time.set_timer(ACCELERATE, 0)
-            
-        
         
         # Draw
         W.fill((16, 16, 16)) # Background
@@ -288,7 +321,7 @@ def main():
                 
         W.blit(text_score, (4, 0)) # FPS counter
         
-        # Update screens
+        # Update
         pygame.display.update()
                      
     pygame.quit()
