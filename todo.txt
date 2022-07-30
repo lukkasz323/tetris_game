@@ -1,11 +1,7 @@
 Main:
-- Score
-- Clear lines
+- Rewrite the way tetrominoes are dropped
 
 Optional:
 - Wall kick on rotation
 - Levels
-
-Bugs:
-- Line clearing bugs when leaving bottom levels alone
-and clearing the rest
+- Hold
